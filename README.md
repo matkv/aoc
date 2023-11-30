@@ -6,7 +6,7 @@ Repository for Advent of Code 2023.
 ## Daily Template
 
 - Create subfolder called "day-1" for example
-- Create new file "firsttask.go"
+- Create new file "nameoftask.go"
 - Add this:
 
 ```go
