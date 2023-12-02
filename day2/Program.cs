@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-internal class Program
+﻿internal class Program
 {
     private static void Main(string[] args)
     {
@@ -12,12 +10,13 @@ internal class Program
 
     private static object SolveTaskPart2(IEnumerable<string> input)
     {
-        return String.Empty;
+        return String.Empty; // NOT DOING PART 2 TODAY
     }
 
     private static object SolveTaskPart1(IEnumerable<string> input)
     {
         var playedGames = new List<Game>();
+        var validGames = new List<Game>();
 
         foreach (var line in input.ToList())
         {
@@ -27,11 +26,8 @@ internal class Program
             int gameIndex = line.IndexOf("Game");
 
             currentGame.ID = line.Substring(gameIndex + 4, colonIndex - gameIndex - 4).Trim();
-            var revealedCubes = line.Substring(colonIndex + 1);
 
-            var separateReveals = revealedCubes.Split(';');
-
-            foreach (var reveal in separateReveals)
+            foreach (var reveal in line.Substring(colonIndex + 1).Split(';'))
             {
                 List<Tuple<int, string>> throws = new List<Tuple<int, string>>();
 
@@ -44,8 +40,6 @@ internal class Program
                     {
                         list.Add(SetCubeDetails(currentThrow));
                     }
-
-
 
                     currentTry.Reveals.Add(list);
                 }
@@ -62,7 +56,6 @@ internal class Program
             playedGames.Add(currentGame);
         }
 
-        var validGames = new List<Game>();
 
         foreach (var game in playedGames)
         {
@@ -86,12 +79,9 @@ internal class Program
             {
                 validGames.Add(game);
             }
-
-
         }
 
         return validGames.Sum(x => Int32.Parse(x.ID));
-
     }
 
     private static Cube SetCubeDetails(string reveal)
@@ -104,17 +94,13 @@ internal class Program
 
     private static CubeColor SetCubeColor(string color)
     {
-        switch (color)
+        return color switch
         {
-            case "red":
-                return CubeColor.Red;
-            case "green":
-                return CubeColor.Green;
-            case "blue":
-                return CubeColor.Blue;
-        }
-
-        return CubeColor.None;
+            "red" => CubeColor.Red,
+            "green" => CubeColor.Green,
+            "blue" => CubeColor.Blue,
+            _ => CubeColor.None,
+        };
     }
 
     public class Game

@@ -64,7 +64,6 @@ internal class Program
             { "9", 9 }
         };
 
-
         foreach (var line in input.ToList())
         {
             var numbersFoundInLine = new List<int>();
@@ -78,9 +77,7 @@ internal class Program
             foreach (var substring in allPossibleSubstrings)
             {
                 if (stringToNumber.ContainsKey(substring))
-                {
                     numbersFoundInLine.Add(stringToNumber[substring]);
-                }
             }
 
             if (numbersFoundInLine.Count > 0)
@@ -89,7 +86,4 @@ internal class Program
 
         return result;
     }
-
-
-
 }
