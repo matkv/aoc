@@ -19,25 +19,12 @@ internal class Program
     {
         var playedGames = new List<Game>();
 
-        var cubesForPossibleGames = new List<Cube>() {
-            new Cube(CubeColor.Red, 12),
-            new Cube(CubeColor.Green, 13),
-            new Cube(CubeColor.Blue, 14)
-
-        };
-
-        var totalRedCubes = new List<Cube>();
-        var totalGreenCubes = new List<Cube>();
-        var totalBlueCubes = new List<Cube>();
-
-
         foreach (var line in input.ToList())
         {
             var currentGame = new Game();
-            currentGame.foundCubes = new List<Cube>();
+            currentGame.TriesInGame = new List<Reveal>();
             var colonIndex = line.IndexOf(':');
             int gameIndex = line.IndexOf("Game");
-
 
             currentGame.ID = line.Substring(gameIndex + 4, colonIndex - gameIndex - 4).Trim();
             var revealedCubes = line.Substring(colonIndex + 1);
@@ -46,47 +33,30 @@ internal class Program
 
             foreach (var reveal in separateReveals)
             {
-                var cubeInfo = reveal.Trim().Replace(",", "").Split(' ');
+                List<Tuple<int, string>> throws = new List<Tuple<int, string>>();
 
-                var currentThrow = new Cube();
-                currentThrow.Amount = Int32.Parse(cubeInfo.First().Trim());
-
-                var color = cubeInfo.Last().Trim();
-                switch (color)
+                var currentTry = new Reveal();
+                currentTry.Reveals = new List<List<Cube>>();
+                if (reveal.Contains(','))
                 {
-                    case "red":
-                        currentThrow.Color = CubeColor.Red;
-                        break;
-                    case "green":
-                        currentThrow.Color = CubeColor.Green;
-                        break;
-                    case "blue":
-                        currentThrow.Color = CubeColor.Blue;
-                        break;
-                }
-
-                currentGame.foundCubes.Add(currentThrow);
-            }
-
-            if (currentGame.foundCubes.Count > 0)
-            {
-                foreach (var cube in currentGame.foundCubes)
-                {
-
-                    switch (cube.Color)
+                    var list = new List<Cube>();
+                    foreach (var currentThrow in reveal.Split(','))
                     {
-                        case CubeColor.Red:
-                            totalRedCubes.Add(cube);
-                            break;
-                        case CubeColor.Green:
-                            totalGreenCubes.Add(cube);
-                            break;
-                        case CubeColor.Blue:
-                            totalBlueCubes.Add(cube);
-                            break;
+                        list.Add(SetCubeDetails(currentThrow));
                     }
+
+
+
+                    currentTry.Reveals.Add(list);
+                }
+                else
+                {
+                    var list = new List<Cube>();
+                    list.Add(SetCubeDetails(reveal));
+                    currentTry.Reveals.Add(list);
                 }
 
+                currentGame.TriesInGame.Add(currentTry);
             }
 
             playedGames.Add(currentGame);
@@ -96,35 +66,72 @@ internal class Program
 
         foreach (var game in playedGames)
         {
-            //TODO need to sum the amounts here per color
+            bool valid = true;
+            foreach (var tryIngame in game.TriesInGame)
+            {
+                foreach (var reveal in tryIngame.Reveals)
+                {
+                    if (reveal.Where(x => x.Color == CubeColor.Red).Sum(x => x.Amount) <= 12 &&
+                    reveal.Where(x => x.Color == CubeColor.Green).Sum(x => x.Amount) <= 13 &&
+                    reveal.Where(x => x.Color == CubeColor.Blue).Sum(x => x.Amount) <= 14)
+                    {
+                        continue;
+                    }
 
-            if (game.foundCubes.Where(x => x.Color == CubeColor.Red && x.Amount <= 12).FirstOrDefault() != null &&
-               game.foundCubes.Where(x => x.Color == CubeColor.Green && x.Amount <= 13).FirstOrDefault() != null &&
-                game.foundCubes.Where(x => x.Color == CubeColor.Blue && x.Amount <= 14).FirstOrDefault() != null)
+                    valid = false;
+                }
+
+            }
+            if (valid)
             {
                 validGames.Add(game);
             }
+
+
         }
 
         return validGames.Sum(x => Int32.Parse(x.ID));
 
     }
 
+    private static Cube SetCubeDetails(string reveal)
+    {
+        var amountAndColor = reveal.TrimStart().Split(' ');
+        var currentThrow = new Tuple<int, string>(Int32.Parse(amountAndColor.First().Trim()), amountAndColor.Last().Trim());
+
+        return new Cube(SetCubeColor(currentThrow.Item2), currentThrow.Item1);
+    }
+
+    private static CubeColor SetCubeColor(string color)
+    {
+        switch (color)
+        {
+            case "red":
+                return CubeColor.Red;
+            case "green":
+                return CubeColor.Green;
+            case "blue":
+                return CubeColor.Blue;
+        }
+
+        return CubeColor.None;
+    }
+
     public class Game
     {
         public string ID { get; set; }
-        public List<Cube> foundCubes { get; set; }
+        public List<Reveal> TriesInGame { get; set; }
+    }
+
+    public class Reveal
+    {
+        public List<List<Cube>> Reveals { get; set; }
     }
 
     public class Cube
     {
         public CubeColor Color { get; set; }
         public int Amount { get; set; }
-
-        public Cube()
-        {
-
-        }
 
         public Cube(CubeColor color, int amount)
         {
@@ -137,6 +144,7 @@ internal class Program
     {
         Red,
         Green,
-        Blue
+        Blue,
+        None
     }
 }
