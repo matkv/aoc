@@ -55,3 +55,11 @@ func main() {
 - Solve the exercise
 - To run the file have it selected in VSCode and just press the "Run" button
 - Repeat every day
+
+## C#
+
+- to add second day, create new project in subfolder
+- in solution explorer -> add project -> choose the new one
+- when pressing F5 it then let's you pick which one you want
+
+Overall I need to clean up this whole repository and switch completely to either Go or C#.
