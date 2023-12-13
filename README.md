@@ -1,5 +1,5 @@
-# aoc-23
-Repository for Advent of Code 2023.
+# Advent of Code
+Repository for Advent of Code.
 
 ## Notes
 
